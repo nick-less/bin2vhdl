@@ -7,3 +7,5 @@ nbactions.xml
 nb-configuration.xml
 /.project
 /target/
+/.classpath
+/.settings/
