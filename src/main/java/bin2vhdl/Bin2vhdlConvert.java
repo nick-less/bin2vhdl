@@ -1,9 +1,11 @@
 package bin2vhdl;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,10 +43,21 @@ class Bin2vhdlConvert {
 	private static final String TEMPLATE_NAME_KEY = "templateName";
 	private static final String WIDTH_KEY = "word_width";
 	private static final String WIDTH_BYTES_KEY = "width_bytes";
-	private static final String DEFAULT_TEMPLATE_NAME = "package.tpl";
+	private static final String DEFAULT_TEMPLATE_NAME = "package.ftl";
+	private static final String ADDR_BITS_KEY = "addr_bits";
 
 	Map<String, Object> variables = new HashMap<>();
-	private OutputStream outputStream = new ByteArrayOutputStream();
+	private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	
+	private String outputName;
+
+	public String getOutputName() {
+		return outputName;
+	}
+
+	public void setOutputName(String outputName) {
+		this.outputName = outputName;
+	}
 
 	public class WriteHex implements TemplateMethodModelEx {
 
@@ -68,6 +81,16 @@ class Bin2vhdlConvert {
 
 		}
 	}
+	
+	public void calculateAddrBits(int size) {
+		int bits = 0;
+		int value =1;
+		while (value < size) {
+			value = value << 1;
+			bits ++;
+		}
+		variables.put(ADDR_BITS_KEY, bits);
+	}
 
 	public void readDataFromFile(String filename) throws FileNotFoundException, IOException {
 		setFileName(filename);
@@ -82,6 +105,7 @@ class Bin2vhdlConvert {
 			bout.write(buf, 0, length);
 		}
 		if (getWidth() == 8) {
+			calculateAddrBits(bout.toByteArray().length);
 			variables.put(VALUES_KEY, bout.toByteArray());
 		}
 		if (getWidth() == 16) {
@@ -94,6 +118,7 @@ class Bin2vhdlConvert {
 					data[i] |= bdata[x++];
 				}
 			}
+			calculateAddrBits(data.length);
 			variables.put(VALUES_KEY, data);
 		}
 
@@ -115,6 +140,7 @@ class Bin2vhdlConvert {
 					data[i] |= bdata[x++];
 				}
 			}
+			calculateAddrBits(data.length);
 			variables.put(VALUES_KEY, data);
 		}
 		try {
@@ -124,8 +150,7 @@ class Bin2vhdlConvert {
 		}
 	}
 
-	private int getWidth() {
-		// TODO Auto-generated method stub
+	public int getWidth() {
 		return (int) variables.get(WIDTH_KEY);
 	}
 
@@ -198,5 +223,35 @@ class Bin2vhdlConvert {
 		variables.put(WIDTH_KEY, width);
 		variables.put(WIDTH_BYTES_KEY, width / 8);
 	}
+
+	
+	public String getFileName() {
+		return (String) variables.get(FILENAME_KEY);
+	}
+	
+	public String getName() {
+		return (String) variables.get(NAME_KEY);
+	}
+
+	public String getTemplateName() {
+		return (String) variables.get(TEMPLATE_NAME_KEY);
+	}
+
+	public int getAddrBits() {
+		return (int) variables.get(ADDR_BITS_KEY);
+
+	}
+
+	public void writeOutputFile() throws IOException {
+		ByteArrayInputStream bin = new ByteArrayInputStream(outputStream.toByteArray());
+		try (FileOutputStream bout = new FileOutputStream(new File(getOutputName()))) {
+			byte[] buf = new byte[8192];
+			int length;
+			while ((length = bin.read(buf)) > 0) {
+				bout.write(buf, 0, length);
+			}
+		}
+	}
+
 
 }

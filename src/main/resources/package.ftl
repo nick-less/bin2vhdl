@@ -4,7 +4,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-package ${name!test} is
+package ${name!filename} is
   type data_t is array(0 to ${(values?size)-1}) of std_logic_vector(${word_width-1} downto 0);
   constant_data :data_t := ( 
   <#list values as x>
@@ -12,6 +12,6 @@ package ${name!test} is
   </#list>
   );
 
-end ${name!test};
+end ${name!filename};
 
 

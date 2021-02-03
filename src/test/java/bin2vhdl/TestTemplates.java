@@ -11,7 +11,7 @@ public class TestTemplates {
 	
 	@Test
 	public void testPackageTemplate () {
-		String templateName ="package.tpl";
+		String templateName ="package.ftl";
 		try {
 			Bin2vhdlConvert converter = new Bin2vhdlConvert();
 			converter.setWidth(8);
@@ -19,13 +19,32 @@ public class TestTemplates {
 			converter.setName("test");
 			converter.readDataFromInputStream((getClass().getClassLoader().getResourceAsStream(templateName)));
 
-			assertEquals(4829, converter.getVhdl().length());
+			assertEquals(4909, converter.getVhdl().length());
 		} catch (IOException e) {
 			e.printStackTrace(); 
 			fail(e.getMessage());
 		}
-		
 	}
+	
+	
+	@Test
+	public void testRomTemplate () {
+		String templateName ="rom.ftl";
+		try {
+			Bin2vhdlConvert converter = new Bin2vhdlConvert();
+			converter.setWidth(8);
+			converter.setFileName("test");
+			converter.setName("test");
+			converter.setTemplateName(templateName);
+			converter.readDataFromInputStream((getClass().getClassLoader().getResourceAsStream("test1")));
+
+			assertEquals(592, converter.getVhdl().length());
+		} catch (IOException e) {
+			e.printStackTrace(); 
+			fail(e.getMessage());
+		}
+	}
+
 	
 	@Test
 	public void testDefaultTemplate () {
