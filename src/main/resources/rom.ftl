@@ -18,7 +18,7 @@ ARCHITECTURE RTL OF ${name!filename} IS
   </#list>
   );
 BEGIN
-    PROCESS (cs)
+    PROCESS (cs, addr)
     BEGIN
         IF (cs = '0') THEN
             D_IO <= ROM_PTR(CONV_INTEGER(ADDR));
