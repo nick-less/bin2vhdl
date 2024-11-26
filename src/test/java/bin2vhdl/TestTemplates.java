@@ -38,7 +38,7 @@ public class TestTemplates {
 			converter.setTemplateName(templateName);
 			converter.readDataFromInputStream((getClass().getClassLoader().getResourceAsStream("test1")));
 
-			assertEquals(592, converter.getVhdl().length());
+			assertEquals(598, converter.getVhdl().length());
 		} catch (IOException e) {
 			e.printStackTrace(); 
 			fail(e.getMessage());
